@@ -4,6 +4,19 @@ const qs = require('querystring')
 const EventEmitter = require('events').EventEmitter
 const request = require('request-promise')
 const crypto = require('crypto')
+const storage = require('node-persist')
+storage.init({
+    dir: './dynamicData',
+    stringify: JSON.stringify,
+    parse: JSON.parse,
+    encoding: 'utf8',
+    logging: false,  // can also be custom logging function
+    continuous: true, // continously persist to disk
+    interval: false, // milliseconds, persist to disk on an interval
+    ttl: false, // ttl* [NEW], can be true for 24h default or a number in MILLISECONDS
+    expiredInterval: 2 * 60 * 1000, // [NEW] every 2 minutes the process will clean-up the expired cache
+    forgiveParseErrors: false // [NEW]
+})
 
 class Bot extends EventEmitter {
   constructor (opts) {
@@ -145,6 +158,11 @@ class Bot extends EventEmitter {
       // we always write 200, otherwise facebook will keep retrying the request
       res.writeHead(200, { 'Content-Type': 'application/json' })
       if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}))
+      if (req.url === '/_chatfuel_status') {
+          let cf_active = req.headers['chatfuel_active'] === 'true'
+          storage.setItem('cfActive', cf_active);
+          res.end(JSON.stringify({status: 'ok'}));
+      }
       if (this.verify_token && req.method === 'GET') return this._verify(req, res)
       if (req.method !== 'POST') return res.end()
 
