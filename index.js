@@ -159,8 +159,12 @@ class Bot extends EventEmitter {
       res.writeHead(200, { 'Content-Type': 'application/json' })
       if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}))
       if (req.url === '/_chatfuel_status') {
-          let cf_active = req.headers['chatfuel_active'] === 'true'
-          storage.setItem('cfActive', cf_active);
+          let newCfActive = req.headers['chatfuel_active'] === 'true'
+          storage.getItem('cfActive', function(err, cfActive) {
+            if (cfActive !== newCfActive) {
+              storage.setItem('cfActive', newCfActive);
+            }
+          })
           res.end(JSON.stringify({status: 'ok'}));
       }
       if (this.verify_token && req.method === 'GET') return this._verify(req, res)
