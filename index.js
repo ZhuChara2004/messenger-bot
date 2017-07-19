@@ -213,7 +213,7 @@ class Bot extends EventEmitter {
     let entries = json.entry
 
     entries.forEach((entry) => {
-      let events = entry.messaging
+      let events = entry.messaging || entry.standby
 
       events.forEach((event) => {
         // handle inbound messages and echos
