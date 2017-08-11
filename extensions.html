@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<body>
+
+    <script>
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'Messenger'));
+    </script>
+
+    <script>
+        var shareFunction = function() {
+        MessengerExtensions.getUserID(function success(uids) {
+            var psid = uids.psid;
+        }, function error(err, errorMessage) {
+            alert('Error');
+        });
+
+//          let messageToShare = {
+//            "attachment":{
+//              "type":"template",
+//              "payload":{
+//                "template_type":"open_graph",
+//                "elements": [{
+//                  "url":"https://www.youtube.com/watch?v=vS7QrSKbCIg",
+//                  "buttons":[ // Buttons are optional
+//                    {"type":"web_url",
+//                      "title":"Learn More",
+//                      "url":"https://en.wikipedia.org/wiki/Rickrolling"}
+//                  ]
+//                }]
+//        }
+//        }
+//        };
+
+
+        let messageToShare = {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "generic",
+                    "elements": [{
+                        "title": "Big Buck Bunny",
+                        "image_url": "http://i.vimeocdn.com/video/20963649_1280x720.jpg",
+                        "subtitle": "watch online free",
+                        "default_action":{
+                            "type":"web_url",
+//                            "url": "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+                            "url": "https://www.youtube.com/watch?v=vS7QrSKbCIg"
+                        },
+                        "buttons":[{
+                            "type":"web_url",
+                            "url":"https://m.me/ShopTMobile/",
+                            "title":"Shop T-Mobile"
+                        }]
+                    }]
+                }
+            }
+        };
+
+          MessengerExtensions.getSupportedFeatures(function success(result) {
+            let features = result.supported_features;
+            alert(features)
+          }, function error(err) {
+
+          });
+
+        MessengerExtensions.beginShareFlow(function success(response) {
+            if(response.is_sent){
+                MessengerExtensions.requestCloseBrowser(function success() { }, function error(err) { });
+            } else { }
+        }, function error(errorCode, errorMessage) { },
+            messageToShare,
+            "current_thread"
+//            "broadcast"
+        );
+      };
+    </script>
+
+    Hello World from GitHub
+    <div id="content">
+        <button id="share" onclick="shareFunction();">Share</button>
+    </div>
+
+</body>
+</html>
